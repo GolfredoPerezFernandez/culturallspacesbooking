@@ -7,12 +7,18 @@
 
 import * as assert from 'assert';
 
+import * as RX from 'reactxp';
 import * as _ from 'lodash';
 
 import NavActions from '../app/NavActions';
 import * as NavModels from '../models/NavModels';
 
 import AppConfig from './AppConfig';
+import CurrentUserStore from '../stores/CurrentUserStore';
+
+const Moralis = require('moralis');
+Moralis.initialize("gusFz0f11qYPoyrwXeIBr8OnIwOgkNZxiF8W83KJ");
+Moralis.serverURL = 'https://y8zeuawsmxmx.usemoralis.com:2053/server'
 
 export default class DeepLinkConverter {
     static getUrlFromContext(context: NavModels.RootNavContext): string {
@@ -170,19 +176,42 @@ export default class DeepLinkConverter {
            
           case 'roadMap':
                     return NavActions.createTodoListContext(isStackNav, undefined, false,false,false,false,true,false,false,false);
-        case 'partner':
+        case 'partners':
                     return NavActions.createTodoListContext(isStackNav, undefined, false,false,false,false,false,false,true);
          case 'about':
                         return NavActions.createTodoListContext(isStackNav, undefined, false,false,false,true,false,false,false);
          case 'involve':
                             return NavActions.createTodoListContext(isStackNav, undefined, false,false,false,false,false,true,false,false);
-      case 'terms':
+           case 'terms':
                                 return NavActions.createTodoListContext(isStackNav, undefined, false,false,false,false,false,false,false,false,true);
-                     
-            default:
-                const selectedValue2 = urlObj.searchParams.get('selected');
-                console.log('seleccion '+selectedValue2)
-                 console.log('seleccion2 '+urlObj)
+            case 'pay':
+                const selectedValue3 = urlObj.searchParams.get('selected');
+                console.log('seleccion45 '+selectedValue3)
+                console.log("pay "+JSON.stringify(RX.Storage.getItem("pay")))
+                
+                let user = Moralis.User.current()
+                console.log("Entro  "  +user.get('paymentId'))
+                if(user.get('paymentId')==selectedValue3){
+                   const balance= user.get('csbBalance')
+                    user.set('csbBalance',100+balance)
+                    
+                    user.save()
+                let username = user.get('username')
+                let email = user.get('email')
+                let createdAt = user.get('createdAt')
+                let sessionToken = user.get('sessionToken')
+                let updatedAt = user.get('updatedAt')
+                let photo = user.get('avatar')
+                let csbBalance = user.get('csbBalance')
+                let objId = user.get('userId')
+
+                    console.log("Entro Exito ")
+                    CurrentUserStore.setUser(username, email, createdAt, sessionToken, updatedAt, photo, csbBalance, objId)
+
+                   return NavActions.createTodoListContext(isStackNav, undefined, false,true);
+                }
+               return NavActions.createTodoListContext(isStackNav, undefined, false,true);
+         default:
                 return NavActions.createTodoListContext(isStackNav, undefined, false,true);
         }
     }

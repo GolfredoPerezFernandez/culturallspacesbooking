@@ -41,6 +41,7 @@ interface RootViewState {
     owner: string;
     ownerId: number;
     username: string;
+    isLogin: boolean;
     user: any;
     mensajes: any;
     autores: any;
@@ -102,6 +103,7 @@ export default class RootView extends ComponentBase<RootViewProps, RootViewState
             isConnect: CurrentUserStore.getIsConnect(),
             owner: CurrentUserStore.getOwner(),
             ownerId: CurrentUserStore.getOwnerId(),
+            isLogin: CurrentUserStore.getLogin(),
             username: CurrentUserStore.getUserName(),
             width: ResponsiveWidthStore.getWidth(),
             isStackNav: newNavContext.isStackNav,
@@ -291,13 +293,13 @@ export default class RootView extends ComponentBase<RootViewProps, RootViewState
             case NavModels.NavViewId.Partner:
                 return <PartnerHook isStackNav={this.state.isStackNav} len={this.state.lenguage} />;
             case NavModels.NavViewId.Chat:
-                return <ChatHook isStackNav={this.state.isStackNav} ownerId={this.state.ownerId} userId={this.state.user.userId} username={this.state.username} owner={this.state.owner} autores={this.state.autores} mensajes={this.state.mensajes} len={this.state.lenguage} />;
+                return <ChatHook isLogin={this.state.isLogin} isStackNav={this.state.isStackNav} ownerId={this.state.ownerId} userId={this.state.user.userId} username={this.state.username} owner={this.state.owner} autores={this.state.autores} mensajes={this.state.mensajes} len={this.state.lenguage} />;
             case NavModels.NavViewId.Recharge:
                 return <RechargeHook isStackNav={this.state.isStackNav} len={this.state.lenguage} />;
             case NavModels.NavViewId.Stripe:
-                return <StripeHook isStackNav={this.state.isStackNav} len={this.state.lenguage} />;
+                return <StripeHook isLogin={this.state.isLogin} isStackNav={this.state.isStackNav} len={this.state.lenguage} />;
             case NavModels.NavViewId.Chats:
-                return <ChatPanel ownerId={this.state.ownerId} userId={this.state.user.userId} />;
+                return <ChatPanel isLogin={this.state.isLogin} ownerId={this.state.ownerId} userId={this.state.user.userId} />;
             case NavModels.NavViewId.Home:
                 return <HomeHook len={this.state.lenguage} width={this.state.width} isStackNav={this.state.isStackNav} entries={this.state.entries} />;
             case NavModels.NavViewId.ViewTodo:
@@ -327,7 +329,7 @@ export default class RootView extends ComponentBase<RootViewProps, RootViewState
 
     private _renderMainView(): JSX.Element | null {
         if (this.state.navContext instanceof NavModels.TodoRootNavContext) {
-            return <TodoCompositeView ownerId={this.state.ownerId} owner={this.state.owner} username={this.state.username} autores={this.state.autores} mensajes={this.state.mensajes} lenguage={this.state.lenguage} user={this.state.user} width={this.state.width} isStackNav={this.state.isStackNav} isConnect={this.state.isConnect} entries={this.state.entries} showSideMenu={this.state.isSideMenu} navContext={this.state.navContext} />;
+            return <TodoCompositeView isLogin={this.state.isLogin} ownerId={this.state.ownerId} owner={this.state.owner} username={this.state.username} autores={this.state.autores} mensajes={this.state.mensajes} lenguage={this.state.lenguage} user={this.state.user} width={this.state.width} isStackNav={this.state.isStackNav} isConnect={this.state.isConnect} entries={this.state.entries} showSideMenu={this.state.isSideMenu} navContext={this.state.navContext} />;
         } else {
             assert.fail('Unexpected main view type');
             return null;

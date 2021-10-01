@@ -19,7 +19,6 @@ import TodoListPanel2 from './TodoListPanel2';
 import ViewTodoPanel from './ViewTodoPanel';
 import { HomeHook } from './HomeHook';
 import { PartnerHook } from './PartnerHook';
-
 import { ChatHook } from './ChatHook';
 
 import { InvolveHook } from './InvolveHook';
@@ -56,6 +55,7 @@ export interface TodoCompositeViewProps extends RX.CommonProps {
     entries: Entries[];
     isStackNav: boolean;
     user: userMoralis;
+    isLogin: boolean;
     width: number;
     ownerId: number;
     username: string;
@@ -206,7 +206,7 @@ export default class TodoCompositeView extends ComponentBase<TodoCompositeViewPr
             );
         } else if (this.props.navContext.showChat) {
             return (
-                <ChatHook isStackNav={this.props.isStackNav} ownerId={this.props.ownerId} userId={this.props.user.userId} username={this.props.username} owner={this.props.owner} mensajes={this.props.mensajes} autores={this.props.autores} len={this.props.lenguage} />
+                <ChatHook isLogin={this.props.isLogin} isStackNav={this.props.isStackNav} ownerId={this.props.ownerId} userId={this.props.user.userId} username={this.props.username} owner={this.props.owner} mensajes={this.props.mensajes} autores={this.props.autores} len={this.props.lenguage} />
             );
         } else if (this.props.navContext.showRecharge) {
             return (
@@ -214,11 +214,11 @@ export default class TodoCompositeView extends ComponentBase<TodoCompositeViewPr
             );
         } else if (this.props.navContext.showStripe) {
             return (
-                <StripeHook isStackNav={this.props.isStackNav} len={this.props.lenguage} />
+                <StripeHook isLogin={this.props.isLogin} isStackNav={this.props.isStackNav} len={this.props.lenguage} />
             );
         } else if (this.props.navContext.showChats) {
             return (
-                <ChatPanel ownerId={this.props.ownerId} userId={this.props.user.userId} />
+                <ChatPanel isLogin={this.props.isLogin} ownerId={this.props.ownerId} userId={this.props.user.userId} />
             );
         } else {
             return <HomeHook len={this.props.lenguage} width={this.props.width} isStackNav={this.props.isStackNav} entries={this.props.entries} />;

@@ -22,13 +22,27 @@ import DeepLinkConverter from './DeepLinkConverter';
 import AppConfig from './AppConfig';
 import CurrentUserStore from '../stores/CurrentUserStore';
 
-
+interface userMoralis {
+    username: string;
+    email: string;
+    createdAt: string;
+    sessionToken: string;
+    emailVerified: boolean;
+    updatedAt: string;
+    avatar: string;
+    userId: number;
+    csbBalance: number;
+}
 import { Chat } from '../models/IdentityModels';
 const Moralis = require('moralis');
 Moralis.initialize("gusFz0f11qYPoyrwXeIBr8OnIwOgkNZxiF8W83KJ");
 Moralis.serverURL = 'https://y8zeuawsmxmx.usemoralis.com:2053/server'
 import getUserLocale from 'get-user-locale';
+import { loadStripe } from '@stripe/stripe-js';
 
+const stripePromise = loadStripe('pk_test_51JXtokLfVewAaHPMDAbIYdoYIhfxdG8M6FWB4pmVUxN7j5MkXPrztUSK17eSroZGR2OApvpUh9WB1kI63OnaWw5600oXOayr8a');
+
+import { Elements, } from '@stripe/react-stripe-js';
 interface Item {
     id: string;
     description: string;
@@ -81,7 +95,7 @@ export default abstract class AppBootstrapper {
             let createdAt = user.get('createdAt')
             let sessionToken = user.get('sessionToken')
             let updatedAt = user.get('updatedAt')
-            let photo = user.get('photo')
+            let avatar = user.get('avatar')
             let csbBalance = user.get('csbBalance')
             let objId = user.get('userId')
 
@@ -91,9 +105,8 @@ export default abstract class AppBootstrapper {
             this.loadtems()
             this.subscriptionChat()
             this.loadChats(username)
-
             this.subscriptionItem()
-            CurrentUserStore.setUser(username, email, createdAt, sessionToken, updatedAt, photo, csbBalance, objId)
+            CurrentUserStore.setUser(username, email, createdAt, sessionToken, updatedAt, avatar, csbBalance, objId)
         } else {
 
             CurrentUserStore.setConnect(false)
@@ -113,9 +126,12 @@ export default abstract class AppBootstrapper {
 
     private _renderRootView() {
         return (
-            <RootView
-                onLayout={this._onLayoutRootView}
-            />
+            <Elements stripe={stripePromise}>
+                <RootView
+                    onLayout={this._onLayoutRootView}
+                />
+            </Elements>
+
 
 
         );
@@ -171,6 +187,29 @@ export default abstract class AppBootstrapper {
         }
 
 
+    }
+    async subscriptionUser() {
+        const query = new Moralis.Query('User');
+        let subscription = await query.subscribe()
+        subscription.on('update', this.onUserUpdated)
+    }
+
+    async onUserUpdated(item: userMoralis) {
+
+        if (item) {
+            let username = item.username
+            let email = item.email
+            let createdAt = item.createdAt
+            let sessionToken = item.sessionToken
+            let updatedAt = item.updatedAt
+            let avatar = item.avatar
+            let csbBalance = item.csbBalance
+            let objId = item.userId
+
+            CurrentUserStore.setUser(username, email, createdAt, sessionToken, updatedAt, avatar, csbBalance, objId)
+            console.log('se actualizo')
+
+        }
     }
     async subscriptionChat() {
         const query = new Moralis.Query('Chat');

@@ -36,6 +36,7 @@ export interface TodoListPanelProps extends RX.CommonProps {
     selectedTodoId?: number;
     ownerId: number;
     userId: number;
+    isLogin: boolean;
 }
 
 
@@ -45,6 +46,7 @@ interface TodoListPanelState {
     searchString: string;
     width: number;
     height: number;
+    isLogin: boolean;
     user: userMoralis;
     ownerId: number;
 }
@@ -83,7 +85,7 @@ export default class ChatPanel extends ComponentBase<TodoListPanelProps, TodoLis
     render() {
         return (
             <RX.View style={{ backgroundColor: '#01012A', justifyContent: 'flex-start', alignItems: 'flex-start', flex: 1 }}>
-                <ChatQuery username={this.state.user.username} ownerId={this.props.ownerId} userId={this.props.userId} height={this.state.height} width={this.state.width} _listItemHeight={100} filterChat={this.state.filteredTodoList} />
+                <ChatQuery isLogin={this.props.isLogin} username={this.state.user.username} ownerId={this.props.ownerId} userId={this.props.userId} height={this.state.height} width={this.state.width} _listItemHeight={100} filterChat={this.state.filteredTodoList} />
 
             </RX.View>
         );

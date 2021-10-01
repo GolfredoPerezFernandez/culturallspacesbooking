@@ -61,6 +61,7 @@ export const ChatQuery = ({
   height,
   width,
   userId,
+  isLogin,
   ownerId,
   username,
 }: {
@@ -69,6 +70,7 @@ export const ChatQuery = ({
   height: number,
   userId: number,
   ownerId: number,
+  isLogin: boolean,
   username: string,
   width: number,
 }) => {
@@ -91,6 +93,11 @@ export const ChatQuery = ({
   }, [])
 
 
+  useEffect(() => {
+    if (!isLogin) {
+      NavContextStore.navigateToTodoList(undefined, false, true)
+    }
+  }, [])
   return (<RX.View useSafeInsets={true} style={_styles.container}>
     {filterChat.length === 0 ?
       <RX.Text style={[_styles.buttomStyle, [{
@@ -117,6 +124,7 @@ interface TodoListItemInfo extends VirtualListViewItemInfo {
 
 import * as RX from 'reactxp'
 
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { ChatListItem } from './ChatListItem';
+import NavContextStore from '../stores/NavContextStore';
 

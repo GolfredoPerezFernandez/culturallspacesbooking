@@ -231,7 +231,7 @@ export const LoginHook = ({
       // };
       const file = new Moralis.File("avatar.jpg", { base64: data });
       await file.saveIPFS()
-      currentUser.set("photo", file.ipfs())
+      currentUser.set("avatar", file.ipfs())
       await currentUser.save()
 
       let username = currentUser.get('username')
@@ -240,10 +240,11 @@ export const LoginHook = ({
       let sessionToken = currentUser.get('sessionToken')
       let updatedAt = currentUser.get('updatedAt')
       let csbBalance = currentUser.get('csbBalance')
-      let photo = currentUser.get('photo')
+      let avatar = currentUser.get('avatar')
       let userid = currentUser.get('userId')
       setCargando(false)
-      CurrentUserStore.setUser(username, email, createdAt, sessionToken, updatedAt, photo, csbBalance, userid)
+      console.log('aasdasd ' + avatar)
+      CurrentUserStore.setUser(username, email, createdAt, sessionToken, updatedAt, avatar, csbBalance, userid)
 
       SimpleDialog.dismissAnimated('delete')
     } else {
@@ -265,12 +266,14 @@ export const LoginHook = ({
   const [cargando, setCargando] = useState(false)
   const [selectAvatar, setAvatar] = useState(false)
   const [disable, setDisabled] = useState(true)
+
   useEffect(() => {
     if (!EmailValidator.validate(email) || email === undefined ? true : false || email === '' ? true : false || password === undefined ? true : false || password === '' ? true : false || password.length < 6 ? true : false) {
 
     } else {
     }
   }, [email, password])
+
   var [data, setData] = useState('')
   var [,] = useState('')
   function setFile64(file: any) {
@@ -407,7 +410,7 @@ export const LoginHook = ({
         let createdAt = user.get('createdAt')
         let sessionToken = user.get('sessionToken')
         let updatedAt = user.get('updatedAt')
-        let photo = user.get('photo')
+        let avatar = user.get('avatar')
         let csbBalance = user.get('csbBalance')
 
         let userId = user.get('userId')
@@ -422,7 +425,7 @@ export const LoginHook = ({
         setCargando(false)
         CurrentUserStore.setLogin(true)
         CurrentUserStore.setConnect(true)
-        CurrentUserStore.setUser(username, email, createdAt, sessionToken, updatedAt, photo, csbBalance, userId)
+        CurrentUserStore.setUser(username, email, createdAt, sessionToken, updatedAt, avatar, csbBalance, userId)
         SimpleDialog.dismissAnimated(_confirmDeleteDialogId)
       }
 
@@ -460,7 +463,6 @@ export const LoginHook = ({
       user.set("password", password);
       user.set("email", email);
       user.set("csbBalance", 0);
-      user.set("photo", '');
       user.set("userId", now.toString());
 
       try {
@@ -472,7 +474,7 @@ export const LoginHook = ({
         let sessionToken = user.get('sessionToken')
         let updatedAt = user.get('updatedAt')
         let csbBalance = user.get('csbBalance')
-        let photo = user.get('photo')
+        let avatar = user.get('avatar')
         let eth = user.get('userId')
         setCargando(false)
         loadUserItems(username)
@@ -485,7 +487,7 @@ export const LoginHook = ({
         setAvatar(true)
         CurrentUserStore.setLogin(true)
         CurrentUserStore.setConnect(true)
-        CurrentUserStore.setUser(username, email, createdAt, sessionToken, updatedAt, photo, csbBalance, eth)
+        CurrentUserStore.setUser(username, email, createdAt, sessionToken, updatedAt, avatar, csbBalance, eth)
 
         // Hooray! Let them use the app now.
       } catch (error) {
@@ -571,9 +573,8 @@ export const LoginHook = ({
 
     }
 
-    console.log('se creo un chat33333333')
     if (userId1.username == item.attributes.receiver || userId1.username == item.attributes.sender) {
-      console.log('entrasdasdo')
+
 
       var count = newChat.messages.length
 
@@ -594,12 +595,8 @@ export const LoginHook = ({
 
     }
 
-    console.log('chat ' + (newChat.receiverId === CurrentUserStore.getAutores()[1].id && newChat.senderId === CurrentUserStore.getAutores()[0].id))
-    console.log('chat33 ' + (newChat.receiverId === CurrentUserStore.getAutores()[0].id && newChat.senderId === CurrentUserStore.getAutores()[1].id))
-
     var count = newChat.messages.length
     if ((newChat.receiverId === CurrentUserStore.getAutores()[1].id && newChat.senderId === CurrentUserStore.getAutores()[0].id) || (newChat.receiverId === CurrentUserStore.getAutores()[0].id && newChat.senderId === CurrentUserStore.getAutores()[1].id)) {
-      console.log('entrxxxxxxo')
 
       CurrentUserStore.setMensajes([], newChat.messages[count - 1])
     }

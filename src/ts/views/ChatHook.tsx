@@ -46,7 +46,7 @@ interface Autor {
   bgImageUrl: string
 }
 export const ChatHook = ({
-  len,
+  len, isLogin,
   isStackNav,
   mensajes,
   autores,
@@ -57,6 +57,7 @@ export const ChatHook = ({
 }: {
   len: string;
   mensajes: any;
+  isLogin: boolean,
   autores: Autor[];
   userId: number;
   isStackNav: boolean,
@@ -115,6 +116,7 @@ export const ChatHook = ({
       showLastSeen,
       showLoadingMessages,
       useCustomBubble,
+
       useCustomStyles,
       showMsgProgress,
     },
@@ -140,7 +142,7 @@ export const ChatHook = ({
     showMsgProgress: false,
   });
 
-
+  const [isdisable, setDisable] = React.useState(false)
   const chat: any = React.useRef();
   const handleIsCurrentTyping = React.useCallback(() => {
     if (currentUser !== 0) {
@@ -189,8 +191,15 @@ export const ChatHook = ({
 
   }, [mensajes.length])
 
+  useEffect(() => {
+    if (!isLogin) {
+      NavContextStore.navigateToTodoList(undefined, false, true)
+    }
+  }, [])
+
   const onMessageSubmit = React.useCallback(
     async (e: RX.Types.SyntheticEvent) => {
+      setDisable(true)
       if (messageText !== '') {
         const id = Number(new Date());
         const newMessage: Message = {
@@ -217,6 +226,7 @@ export const ChatHook = ({
 
           await chat.save().then(async (chat: any) => {
             // Execute any logic that should take place after the object is saved.
+            setDisable(false)
 
           }, (error: any) => {
             // Execute any logic that should take place if the save fails.
@@ -228,7 +238,9 @@ export const ChatHook = ({
             ...previousState,
             messageText: '',
           }));
+
           await Moralis.Cloud.run('addMessage', { username: username, owner: owner, ownerId, userId, newMessage, oldMenssages })
+          setDisable(false)
 
 
         }
@@ -265,7 +277,7 @@ export const ChatHook = ({
       <RX.View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
         <RX.TextInput value={messageText} onChangeText={onMessageChange} placeholder="Type a message..."
           style={{ width: 400, height: 47, borderRadius: 11, borderWidth: 1 }}></RX.TextInput>
-        <RX.Button onPress={onMessageSubmit} style={{ backgroundColor: 'lightblue', marginLeft: 10, marginTop: 10, marginBottom: 10, borderRadius: 11, width: 80, justifyContent: 'center', alignItems: 'center', height: 40 }}>{'send'}</RX.Button>
+        <RX.Button disabled={isdisable} onPress={onMessageSubmit} style={{ backgroundColor: 'lightblue', marginLeft: 10, marginTop: 10, marginBottom: 10, borderRadius: 11, width: 80, justifyContent: 'center', alignItems: 'center', height: 40 }}>{'send'}</RX.Button>
       </RX.View>
     </UI.Paper>
   </RX.View >);
@@ -286,5 +298,6 @@ const customBubble: React.FC<ChatBubbleProps<string>> = props => (
 );
 import * as RX from 'reactxp'
 import { useEffect } from 'react';
+import NavContextStore from '../stores/NavContextStore';
 //import CurrentUserStore from '../stores/CurrentUserStore';
 

@@ -30,16 +30,24 @@ const _styles = {
 
   })
 }
+const Moralis = require('moralis');
+Moralis.initialize("gusFz0f11qYPoyrwXeIBr8OnIwOgkNZxiF8W83KJ");
+Moralis.serverURL = 'https://y8zeuawsmxmx.usemoralis.com:2053/server'
 import * as UI from '@sproutch/ui';
 
 import {
   useStripe,
 } from '@stripe/react-stripe-js';
+
+
+
 export const StripeHook = ({
   len,
+  isLogin,
   isStackNav
 }: {
   len: string;
+  isLogin: boolean,
   isStackNav: boolean;
 }) => {
 
@@ -53,23 +61,31 @@ export const StripeHook = ({
     if (stripe) {
 
       const now = Date.now().valueOf();
-
-      RX.Storage.setItem('pay', now.toString())
-      await stripe.redirectToCheckout({
-        lineItems: [{
-          price: 'price_1JYGKYLfVewAaHPMX9P0lWjs', // Replace with the ID of your price
-          quantity: 1,
-        }],
-        mode: 'payment',
-        successUrl: 'http://localhost:5000/' + now,
-        cancelUrl: 'http://localhost:5000/recharge',
-      })
+      let user = Moralis.User.current()
+      if (user) {
+        user.set('paymentId', now)
+        user.save()
+        await stripe.redirectToCheckout({
+          lineItems: [{
+            price: 'price_1JYGKYLfVewAaHPMX9P0lWjs', // Replace with the ID of your price
+            quantity: 1,
+          }],
+          mode: 'payment',
+          successUrl: `http://localhost:5000/pay?selected=${now}`,
+          cancelUrl: 'http://localhost:5000/recharge',
+        })
+      }
     }
   }
   // Get a reference to a mounted CardElement. Elements knows how
   // to find your CardElement because there can only ever be one of
   // each type of element.
 
+  useEffect(() => {
+    if (!isLogin) {
+      NavContextStore.navigateToTodoList(undefined, false, true)
+    }
+  }, [])
 
   return (
     <RX.View style={{ flex: 1, backgroundColor: '#434040', alignItems: 'center', justifyContent: 'center' }}>
@@ -95,5 +111,6 @@ export const StripeHook = ({
 };
 
 import * as RX from 'reactxp'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import NavContextStore from '../stores/NavContextStore';
 

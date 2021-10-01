@@ -162,7 +162,7 @@ export default class TopBarComposite extends ComponentBase<TopBarCompositeProps,
         }
         return (
             <RX.View style={[_styles.background, { width: this.props.width }]}>
-                <RX.View style={[{ height: 75, width: this.props.width * 0.30, flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }]}>
+                <RX.View style={[{ height: 80, width: this.props.width * 0.30, flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }]}>
                     {leftContents}
                     {this.state.isLogin === false ?
                         null
