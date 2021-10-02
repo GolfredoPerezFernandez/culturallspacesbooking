@@ -239,12 +239,13 @@ export default abstract class AppBootstrapper {
 
             CurrentUserStore.setAllItems([], newItem);
             if (user.get('username') === newItem.owner) {
-
+                console.log('en susbscription')
                 CurrentUserStore.setUserItems([], newItem);
             }
         } else {
             if (user.get('username') === newItem.owner) {
 
+                console.log('en susbscription2')
                 CurrentUserStore.setUserItems([], newItem);
             }
         }
@@ -261,6 +262,7 @@ export default abstract class AppBootstrapper {
 
         const params = { owner: username };
         const ownedItems = await Moralis.Cloud.run('getUserItems', params)
+        console.log('useritems ajeasd ' + ownedItems)
         CurrentUserStore.setUserItems(ownedItems)
 
     }

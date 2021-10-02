@@ -104,6 +104,7 @@ interface userMoralis {
 }
 
 import { translate } from './translate';
+import CurrentUserStore from '../stores/CurrentUserStore';
 export const CreateTodoHook = ({
   todoName,
   _onChangeText,
@@ -124,6 +125,7 @@ export const CreateTodoHook = ({
   var [price, setPrice] = useState(0)
   var [url, setUrl] = useState('')
   var [type, setType] = useState('')
+  var [funds, setFunds] = useState('')
 
   var [forSale, setForSale] = useState(false)
   const [cargando,] = useState(false)
@@ -131,6 +133,8 @@ export const CreateTodoHook = ({
   const onCreate = async (e: RX.Types.SyntheticEvent) => {
 
     e.stopPropagation();
+
+    let user = Moralis.User.current()
     const Item = Moralis.Object.extend("Item")
     const item = new Item()
     item.set("price", price)
@@ -142,10 +146,44 @@ export const CreateTodoHook = ({
     item.set("ownerEmail", user.email)
     item.set("ownerId", user.userId)
     item.set("forSale", forSale)
-    await item.save()
-      .then((item: any) => {
-        // Execute any logic that should take place after the object is saved.
 
+
+    const balance = user.get('csbBalance')
+
+    if (forSale == false) {
+
+      user.set('csbBalance', balance - 4)
+
+      console.log('balance11 ' + (balance - 4))
+      await user.save()
+      let username = user.get('username')
+      let email = user.get('email')
+      let createdAt = user.get('createdAt')
+      let sessionToken = user.get('sessionToken')
+      let updatedAt = user.get('updatedAt')
+      let photo = user.get('avatar')
+      let objId = user.get('userId')
+      CurrentUserStore.setUser(username, email, createdAt, sessionToken, updatedAt, photo, (balance - 4), objId)
+
+    } else {
+      user.set('csbBalance', balance - (price * 0.04))
+
+      console.log('balance113 ' + balance)
+      await user.save()
+      let username = user.get('username')
+      let email = user.get('email')
+      let createdAt = user.get('createdAt')
+      let sessionToken = user.get('sessionToken')
+      let updatedAt = user.get('updatedAt')
+      let photo = user.get('avatar')
+      let objId = user.get('userId')
+
+      CurrentUserStore.setUser(username, email, createdAt, sessionToken, updatedAt, photo, balance - (price * 0.04), objId)
+      await user.save()
+    }
+    if (balance > 4 && balance > price * 0.04) {
+      await item.save().then((item: any) => {
+        // Execute any logic that should take place after the object is saved.
         NavContextStore.navigateToTodoList()
         console.log('New object created with objectId: ' + item.id);
       }, (error: any) => {
@@ -153,6 +191,9 @@ export const CreateTodoHook = ({
         // error is a Moralis.Error with an error code and message.
         console.log('Failed to create new object, with error code: ' + error.message);
       });
+    } else {
+      setFunds('Sin Fondos')
+    }
 
   };
   const success2 = async (res: any) => {
@@ -295,11 +336,17 @@ export const CreateTodoHook = ({
         accessibilityId={'EditTodoPanelTextInput'}
       />
     </RX.View> : null}
+    <RX.Text style={[_styles.Text2, { marginLeft: 30, marginTop: 10 }]} >
+      {'Fee 4 csb'}
+    </RX.Text>
+
     <UI.Button onPress={onCreate} iconSlot={iconStyle => (
       <AiOutlinePlus color={'#FF296D'} style={{ marginTop: 0, marginRight: 5, width: 16, height: 16 }} />
     )} style={{ content: [{ marginTop: 20, width: 160, borderRadius: 11, }], label: _styles.label }
     } elevation={4} variant={"outlined"} label="Create Item" />
-
+    <RX.Text style={[_styles.Text2, { marginLeft: 30, marginTop: 10 }]} >
+      {funds}
+    </RX.Text>
   </RX.View>)
 
 }

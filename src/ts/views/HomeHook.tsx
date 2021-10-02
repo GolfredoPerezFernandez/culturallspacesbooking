@@ -173,7 +173,6 @@ export const HomeHook = ({
           return (<RX.View style={{ overflow: 'hidden', alignSelf: 'center', marginTop: 0, flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
             <RX.Image resizeMethod={'auto'} resizeMode={'cover'} style={{ width: 100, marginBottom: 15, height: 100 }} source={ImageSource.logo2}></RX.Image>
             <RX.Text style={[_styles.titleStyle, { width: isStackNav ? 350 : 400 }]}>{item.title}</RX.Text>
-            <RX.Text style={[_styles.titleStyle3, { width: isStackNav ? 300 : 450, }]}>{item.imgText}</RX.Text>
           </RX.View>);
         }}
         sliderWidth={width}
