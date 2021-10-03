@@ -123,6 +123,7 @@ export const CreateTodoHook = ({
   var [title, setTitle] = useState('')
   var [content, setContent] = useState('')
   var [price, setPrice] = useState(0)
+  var [fee, setFee] = useState(4)
   var [url, setUrl] = useState('')
   var [type, setType] = useState('')
   var [funds, setFunds] = useState('')
@@ -154,7 +155,7 @@ export const CreateTodoHook = ({
 
       user.set('csbBalance', balance - 4)
 
-      console.log('balance11 ' + (balance - 4))
+      setFee(4)
       await user.save()
       let username = user.get('username')
       let email = user.get('email')
@@ -166,7 +167,9 @@ export const CreateTodoHook = ({
       CurrentUserStore.setUser(username, email, createdAt, sessionToken, updatedAt, photo, (balance - 4), objId)
 
     } else {
-      user.set('csbBalance', balance - (price * 0.04))
+      let pri = price * 0.04 <= 4 ? 4 : price * 0.04
+      setFee(price * 0.04 <= 4 ? 4 : price * 0.04)
+      user.set('csbBalance', balance - pri)
 
       console.log('balance113 ' + balance)
       await user.save()
@@ -181,7 +184,7 @@ export const CreateTodoHook = ({
       CurrentUserStore.setUser(username, email, createdAt, sessionToken, updatedAt, photo, balance - (price * 0.04), objId)
       await user.save()
     }
-    if (balance > 4 && balance > price * 0.04) {
+    if (balance >= 4 && balance > price * 0.04) {
       await item.save().then((item: any) => {
         // Execute any logic that should take place after the object is saved.
         NavContextStore.navigateToTodoList()
@@ -337,7 +340,7 @@ export const CreateTodoHook = ({
       />
     </RX.View> : null}
     <RX.Text style={[_styles.Text2, { marginLeft: 30, marginTop: 10 }]} >
-      {'Fee 4 csb'}
+      {'Fee ' + fee}
     </RX.Text>
 
     <UI.Button onPress={onCreate} iconSlot={iconStyle => (

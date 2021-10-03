@@ -103,6 +103,7 @@ export default abstract class AppBootstrapper {
             CurrentUserStore.setLogin(true)
             this.loadUserItems(username)
             this.loadtems()
+            this.loadUsertems()
             this.subscriptionChat()
             this.loadChats(username)
             this.subscriptionItem()
@@ -148,6 +149,11 @@ export default abstract class AppBootstrapper {
         CurrentUserStore.setAllItems(ownedItems)
     }
 
+    loadUsertems = async () => {
+
+        const ownedItems = await Moralis.Cloud.run('getUserItems')
+        CurrentUserStore.setUserItems(ownedItems)
+    }
     async onChatCreated2(item: any) {
         var userId1 = CurrentUserStore.getUser()
         var newChat: Chat = {

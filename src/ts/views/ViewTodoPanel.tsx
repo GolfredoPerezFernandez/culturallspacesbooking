@@ -31,7 +31,9 @@ interface userMoralis {
 }
 interface ViewTodoPanelState {
     todo: Item;
-    user: userMoralis
+    onError: boolean;
+    user: userMoralis;
+    elError: string;
 }
 
 interface Item {
@@ -93,6 +95,7 @@ export default class ViewTodoPanel extends ComponentBase<ViewTodoPanelProps, Vie
         const newState: Partial<ViewTodoPanelState> = {
             todo: CurrentUserStore.getActive() === 'all' ? CurrentUserStore.getTodoById2(props.todoId) : CurrentUserStore.getActive() === 'My' ? CurrentUserStore.getTodoById(props.todoId) : undefined,
             user: CurrentUserStore.getUser(),
+
         };
         return newState;
     }
@@ -104,10 +107,6 @@ export default class ViewTodoPanel extends ComponentBase<ViewTodoPanelProps, Vie
     };
     setChatId = async () => {
 
-
-        console.log('ownerIDViewTodo333 ' + this.state.todo.ownerId)
-        console.log('this.state.user.username ' + this.state.user.username)
-        console.log('this.state.todo.owner ' + this.state.todo.owner)
         var authors: Autor[] = [
             {
                 id: this.state.user.userId,
@@ -125,10 +124,7 @@ export default class ViewTodoPanel extends ComponentBase<ViewTodoPanelProps, Vie
             }
         ]
         CurrentUserStore.setAutores(authors);
-        console.log('username ' + this.state.user.username)
-        console.log('owner ' + this.state.todo.owner)
         const chatExists = await Moralis.Cloud.run('getUserChats', { username: this.state.user.username, owner: this.state.todo.owner })
-        console.log("exist " + JSON.stringify(chatExists))
         if (chatExists.length > 0) {
             if (chatExists[0].messages === undefined) {
 
@@ -143,15 +139,40 @@ export default class ViewTodoPanel extends ComponentBase<ViewTodoPanelProps, Vie
         }
         CurrentUserStore.setUserName(this.state.user.username)
         CurrentUserStore.setOwner(this.state.todo.owner)
-        console.log('ownerIDViewTodo ' + JSON.stringify(this.state.todo))
-        console.log('ownerIDViewTodo ' + this.state.todo.ownerId)
         CurrentUserStore.setOwnerId(this.state.todo.ownerId)
         NavContextStore.navigateToTodoList(undefined, false, false, false, false, false, false, false, false, false, true)
 
 
 
     }
+    elError = ''
+    onError = false
+    comprar = async () => {
 
+        this.onError = false
+
+        let user = Moralis.User.current()
+        if (user) {
+            var bal = user.get('csbBalance')
+            if (bal >= this.state.todo.price) {
+
+                user.set('csbBalance', bal - this.state.todo.price)
+                await user.save()
+                NavContextStore.navigateToTodoList(undefined, false, true, false, false, false, false, false, false, false)
+
+            } else {
+                this.onError = true
+                this.elError = 'Sin Fondos'
+
+            }
+        } else {
+
+            this.onError = true
+            this.elError = 'Inicie Session'
+
+        }
+
+    }
     handlePause = () => {
 
         this.isPlaying = true
@@ -211,6 +232,14 @@ export default class ViewTodoPanel extends ComponentBase<ViewTodoPanelProps, Vie
                     )} style={{ content: [{ width: 200, borderRadius: 11, }], label: _styles.label }
                     } elevation={4} variant={"outlined"} label="Send a message" />
                     }
+                    {this.state.todo.forSale === false && this.state.todo.owner === this.state.user.username ? null : <UI.Button onPress={this.comprar} iconSlot={iconStyle => (
+                        <GrSend color={'#FF296D'} style={{ marginRight: 5, width: 16, height: 16 }} />
+                    )} style={{ root: [{ marginTop: 20, }], content: [{ width: 200, borderRadius: 11, }], label: _styles.label }
+                    } elevation={4} variant={"outlined"} label={"Comprar por " + this.state.todo.price + " csb"} />
+                    }
+                    <RX.Text style={_styles.todoText}>
+                        {this.onError ? "Error " + this.elError : ''}
+                    </RX.Text>
 
                 </RX.View>
 
