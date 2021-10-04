@@ -151,7 +151,7 @@ export const CreateTodoHook = ({
 
     const balance = user.get('csbBalance')
 
-    if (forSale == false) {
+    if (forSale == false && balance >= 4) {
 
       user.set('csbBalance', balance - 4)
 
@@ -164,27 +164,9 @@ export const CreateTodoHook = ({
       let updatedAt = user.get('updatedAt')
       let photo = user.get('avatar')
       let objId = user.get('userId')
-      CurrentUserStore.setUser(username, email, createdAt, sessionToken, updatedAt, photo, (balance - 4), objId)
+      let newBalance = user.get('csbBalance')
+      CurrentUserStore.setUser(username, email, createdAt, sessionToken, updatedAt, photo, newBalance, objId)
 
-    } else {
-      let pri = price * 0.04 <= 4 ? 4 : price * 0.04
-      setFee(price * 0.04 <= 4 ? 4 : price * 0.04)
-      user.set('csbBalance', balance - pri)
-
-      console.log('balance113 ' + balance)
-      await user.save()
-      let username = user.get('username')
-      let email = user.get('email')
-      let createdAt = user.get('createdAt')
-      let sessionToken = user.get('sessionToken')
-      let updatedAt = user.get('updatedAt')
-      let photo = user.get('avatar')
-      let objId = user.get('userId')
-
-      CurrentUserStore.setUser(username, email, createdAt, sessionToken, updatedAt, photo, balance - (price * 0.04), objId)
-      await user.save()
-    }
-    if (balance >= 4 && balance > price * 0.04) {
       await item.save().then((item: any) => {
         // Execute any logic that should take place after the object is saved.
         NavContextStore.navigateToTodoList()
@@ -194,7 +176,36 @@ export const CreateTodoHook = ({
         // error is a Moralis.Error with an error code and message.
         console.log('Failed to create new object, with error code: ' + error.message);
       });
+    } else if (balance > price * 0.04 && balance >= 4) {
+      let pri = price * 0.04 <= 4 ? 4 : price * 0.04
+      setFee(price * 0.04 <= 4 ? 4 : price * 0.04)
+      user.set('csbBalance', balance - pri)
+
+      await user.save()
+      let username = user.get('username')
+      let email = user.get('email')
+      let createdAt = user.get('createdAt')
+      let sessionToken = user.get('sessionToken')
+      let updatedAt = user.get('updatedAt')
+      let photo = user.get('avatar')
+      let objId = user.get('userId')
+
+
+      let newBalance = user.get('csbBalance')
+      CurrentUserStore.setUser(username, email, createdAt, sessionToken, updatedAt, photo, newBalance, objId)
+
+      await item.save().then((item: any) => {
+        // Execute any logic that should take place after the object is saved.
+        NavContextStore.navigateToTodoList()
+        console.log('New object created with objectId: ' + item.id);
+      }, (error: any) => {
+        // Execute any logic that should take place if the save fails.
+        // error is a Moralis.Error with an error code and message.
+        console.log('Failed to create new object, with error code: ' + error.message);
+      });
+      await user.save()
     } else {
+
       setFunds('Sin Fondos')
     }
 

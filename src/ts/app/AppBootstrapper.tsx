@@ -244,10 +244,7 @@ export default abstract class AppBootstrapper {
         if (item.attributes.forSale === true) {
 
             CurrentUserStore.setAllItems([], newItem);
-            if (user.get('username') === newItem.owner) {
-                console.log('en susbscription')
-                CurrentUserStore.setUserItems([], newItem);
-            }
+
         } else {
             if (user.get('username') === newItem.owner) {
 

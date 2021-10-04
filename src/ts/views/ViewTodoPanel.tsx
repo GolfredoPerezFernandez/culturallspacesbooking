@@ -131,7 +131,6 @@ export default class ViewTodoPanel extends ComponentBase<ViewTodoPanelProps, Vie
                 CurrentUserStore.setMensajes([])
             } else {
                 CurrentUserStore.setMensajes(chatExists[0].messages)
-
             }
         } else {
             CurrentUserStore.setMensajes([])
