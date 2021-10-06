@@ -71,6 +71,15 @@ const _styles = {
     }),
     todoListHeader: RX.Styles.createViewStyle({
         height: 60,
+        flex: 1,
+        borderBottomWidth: 1,
+        borderColor: Colors.borderSeparator,
+        flexDirection: 'row',
+        alignItems: 'center',
+    }),
+    todoListHeader2: RX.Styles.createViewStyle({
+        height: 60,
+        flex: 1,
         borderBottomWidth: 1,
         borderColor: Colors.borderSeparator,
         flexDirection: 'row',
@@ -176,7 +185,7 @@ export default class TodoListPanel extends ComponentBase<TodoListPanelProps, Tod
                     } elevation={4} variant={"outlined"} label={this.props.len === 'en' ? translate.todolist1.english.ButtomNew : this.props.len === 'es' ? translate.todolist1.español.ButtomNew : translate.todolist1.french.ButtomNew} />
 
                 </RX.View>
-                <RX.View style={_styles.todoListHeader}>
+                <RX.View style={_styles.todoListHeader2}>
 
                     <RX.TextInput
                         style={_styles.searchBox}
