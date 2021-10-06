@@ -71,8 +71,8 @@ export const StripeHook = ({
             quantity: 1,
           }],
           mode: 'payment',
-          successUrl: `http://localhost:5000/pay?selected=${now}`,
-          cancelUrl: 'http://localhost:5000/recharge',
+          successUrl: `https://culturalspacesbooking.herokuapp.com/pay?selected=${now}`,
+          cancelUrl: 'https://culturalspacesbooking.herokuapp.com',
         })
       }
     }
