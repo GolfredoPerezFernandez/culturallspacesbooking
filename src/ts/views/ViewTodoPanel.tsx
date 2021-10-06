@@ -157,6 +157,18 @@ export default class ViewTodoPanel extends ComponentBase<ViewTodoPanelProps, Vie
 
                 user.set('csbBalance', bal - this.state.todo.price)
                 await user.save()
+                let username = user.get('username')
+                let email = user.get('email')
+                let createdAt = user.get('createdAt')
+                let sessionToken = user.get('sessionToken')
+                let updatedAt = user.get('updatedAt')
+                let photo = user.get('avatar')
+                let objId = user.get('userId')
+
+
+                let newBalance = user.get('csbBalance')
+                CurrentUserStore.setUser(username, email, createdAt, sessionToken, updatedAt, photo, newBalance, objId)
+
                 NavContextStore.navigateToTodoList(undefined, false, true, false, false, false, false, false, false, false)
 
             } else {
